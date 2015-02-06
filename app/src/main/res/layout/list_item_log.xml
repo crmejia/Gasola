@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Lasted 2 days"
-        android:id="@+id/list_item_log_perior_textView"
+        android:id="@+id/list_item_log_period_textView"
         android:layout_gravity="center_horizontal" />
 
     <TextView

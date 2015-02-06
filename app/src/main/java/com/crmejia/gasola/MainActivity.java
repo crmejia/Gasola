@@ -2,7 +2,11 @@ package com.crmejia.gasola;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,13 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.crmejia.gasola.data.LogContract;
 
 
 public class MainActivity extends Activity {
@@ -58,42 +60,70 @@ public class MainActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
         private Button mNewLogButton;
         private Button mCurrentLogButton;
+        private SimpleCursorAdapter mLogAdapter;
+
+        private static final int LOG_LOADER = 1;
+
+        //projection
+        private static final String[] LOG_COLUMNS={
+                LogContract.LogEntry.TABLE_NAME + "." + LogContract.LogEntry._ID,
+                LogContract.LogEntry.COLUMN_START_DATE,
+                LogContract.LogEntry.COLUMN_END_DATE,
+                LogContract.LogEntry.COLUMN_START_DISTANCE,
+                LogContract.LogEntry.COLUMN_END_DISTANCE,
+                LogContract.LogEntry.COLUMN_GAS_AMOUNT,
+        };
+
+        //Indices tied to the Log columns projection
+        public static final int COL_LOG_ID = 0;
+        public static final int COL_LOG_START_DATE = 1;
+        public static final int COL_LOG_END_DATE = 2;
+        public static final int COL_LOG_START_DISTANCE = 3;
+        public static final int COL_LOG_END_DISTANCE = 4;
+        public static final int COL_LOG_GAS_AMOUNT = 5;
+
 
         public PlaceholderFragment() {
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            getLoaderManager().initLoader(LOG_LOADER,null,this);
+            super.onActivityCreated(savedInstanceState);
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            String[] dummyData = {
-                    "20 litres - 200 km     from 01/01/2015 until 01/03/2015",
-                    "10 litres - 200 km     from 01/01/2015 until 01/03/2015",
-                    "24 litres - 200 km     from 01/01/2015 until 01/03/2015",
-                    "18 litres - 200 km     from 01/01/2015 until 01/03/2015",
-                    "8 litres - 200 km     from 01/01/2015 until 01/03/2015",
-                    "11 litres - 200 km     from 01/01/2015 until 01/03/2015",
-                    "34 litres - 200 km     from 01/01/2015 until 01/03/2015",
-                    "2 litres - 200 km     from 01/05/2015 until 01/03/2015",
-                    "11 litres - 200 km     from 01/03/2015 until 01/05/2015",
-                    "50 litres - 200 km     from 01/01/2015 until 01/03/2015",
-            };
-
-            List<String> logs = new ArrayList<String>(Arrays.asList(dummyData));
-
-            ArrayAdapter<String> logsAdapter = new ArrayAdapter<String>(
+            mLogAdapter = new SimpleCursorAdapter(
                     getActivity(),
                     R.layout.list_item_log,
-                    R.id.list_item_log_distance_textView,
-                    logs);
+                    null,
+                    new String[]{LogContract.LogEntry.COLUMN_START_DATE,
+                            LogContract.LogEntry.COLUMN_END_DATE,
+                            LogContract.LogEntry.COLUMN_START_DISTANCE,
+                            LogContract.LogEntry.COLUMN_GAS_AMOUNT
+                    },
+                    new int[]{
+                            R.id.list_item_log_start_date_textView,
+                            R.id.list_item_log_end_date_textView,
+                            R.id.list_item_log_distance_textView,
+                            R.id.list_item_log_quantity_textView
+                    },
+                    0
+            );
+
+//            TODO mLogAdapter.setViewBinder( );
+
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             ListView listView = (ListView) rootView.findViewById(R.id.listView_logs);
-            listView.setAdapter(logsAdapter);
+            listView.setAdapter(mLogAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -122,6 +152,32 @@ public class MainActivity extends Activity {
             });
 
             return rootView;
+        }
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+            // Sort order:  Ascending, by date.
+            String sortOrder = LogContract.LogEntry.COLUMN_START_DATE + " ASC";
+
+            return new CursorLoader(
+                    getActivity(),
+                    LogContract.LogEntry.CONTENT_URI,
+                    LOG_COLUMNS,
+                    null,
+                    null,
+                    sortOrder
+            );
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            mLogAdapter.swapCursor(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            mLogAdapter.swapCursor(null);
+
         }
     }
 }
