@@ -2,13 +2,22 @@ package com.crmejia.gasola;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+
+import com.crmejia.gasola.data.LogContract;
+
+import java.util.Date;
 
 
 public class NewLogActivity extends Activity {
@@ -52,6 +61,7 @@ public class NewLogActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment {
         private Button mStartLogButton;
+        private final String LOG_TAG = MainActivity.class.getSimpleName();
 
         public PlaceholderFragment() {
         }
@@ -65,11 +75,42 @@ public class NewLogActivity extends Activity {
             mStartLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    getActivity().finish();
+                    if(createNewLog())
+                        getActivity().finish();
                 }
             });
 
             return rootView;
+        }
+        private boolean createNewLog(){
+            //TODO read input & validate
+            String gasAmountString = ((EditText) getView().findViewById(R.id.gas_amount_editText)).getText().toString();
+            String startDistanceString = ((EditText) getView().findViewById(R.id.start_distance_editText)).getText().toString();
+
+            try {
+                int gasAmount = Integer.parseInt(gasAmountString);
+                int startDistance = Integer.parseInt(startDistanceString);
+                if(gasAmount > 0 && startDistance > 0) {
+                    //TODO  get contentProvider from resolver and insertdata
+                    ContentValues newLogValues = new ContentValues();
+                    newLogValues.put(LogContract.LogEntry.COLUMN_START_DISTANCE, startDistance);
+                    newLogValues.put(LogContract.LogEntry.COLUMN_GAS_AMOUNT, gasAmount);
+                    newLogValues.put(LogContract.LogEntry.COLUMN_START_DATE, LogContract.LogEntry.getDbDateString(new Date()));
+
+                    // fake values, should be null?
+                    newLogValues.put(LogContract.LogEntry.COLUMN_END_DISTANCE, 0);
+                    newLogValues.put(LogContract.LogEntry.COLUMN_END_DATE, LogContract.LogEntry.getDbDateString(new Date()));
+
+
+                    Uri newLogUri = getActivity().getContentResolver().insert(LogContract.LogEntry.CONTENT_URI, newLogValues);
+
+                    if (ContentUris.parseId(newLogUri) != -1)
+                        return true;
+                }
+            } catch (NumberFormatException e) {
+                Log.i(LOG_TAG, e.getMessage());
+            }
+            return  false;
         }
     }
 }

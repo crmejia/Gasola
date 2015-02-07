@@ -124,6 +124,7 @@ public class MainActivity extends Activity {
 
             ListView listView = (ListView) rootView.findViewById(R.id.listView_logs);
             listView.setAdapter(mLogAdapter);
+
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -156,8 +157,8 @@ public class MainActivity extends Activity {
 
         @Override
         public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-            // Sort order:  Ascending, by date.
-            String sortOrder = LogContract.LogEntry.COLUMN_START_DATE + " ASC";
+            // Sort order:  descending, by date.
+            String sortOrder = LogContract.LogEntry.COLUMN_START_DATE + " DESC";
 
             return new CursorLoader(
                     getActivity(),
