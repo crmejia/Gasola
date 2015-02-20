@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:id="@+id/editText2"
+        android:id="@+id/end_distance_editText"
         android:layout_gravity="center_horizontal" />
 
     <Button

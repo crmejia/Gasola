@@ -11,6 +11,7 @@ import android.net.Uri;
  * Created by crismarmejia on 1/31/15.
  */
 public class LogProvider extends ContentProvider {
+    public static final String _ID_SELECTION = " _ID = ? ";
     private static final int LOG = 100;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();

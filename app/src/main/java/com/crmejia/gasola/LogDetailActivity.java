@@ -2,12 +2,14 @@ package com.crmejia.gasola;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 
 public class LogDetailActivity extends Activity {
@@ -58,6 +60,14 @@ public class LogDetailActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_log_detail, container, false);
+
+            Intent intent = getActivity().getIntent();
+
+            if(intent != null && intent.hasExtra(Intent.EXTRA_TEXT)){
+                String detailLogString = intent.getStringExtra(Intent.EXTRA_TEXT);
+                ((TextView)rootView.findViewById(R.id.log_detail_textview)).setText(detailLogString);
+            }
+
             return rootView;
         }
     }
