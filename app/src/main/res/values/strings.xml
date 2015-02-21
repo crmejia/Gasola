@@ -8,4 +8,27 @@
     <string name="title_activity_end_log">EndLogActivity</string>
     <string name="title_activity_log_detail">LogDetailActivity</string>
 
+    <!--****************************************************************************-->
+    <!--Settings-->
+    <!--****************************************************************************-->
+
+    <!--distance settings-->
+    <string name="pref_distance_units_label">Distance Units</string>
+    <string name="pref_distance_units_label_kilometers">kilometers</string>
+    <string name="pref_distance_units_label_miles">miles</string>
+
+    <string name="pref_distance_units_key" translatable="false">distance_units</string>
+    <string name="pref_distance_units_kilometers" translatable="false">kilometers_units</string>
+    <string name="pref_distance_units_miles" translatable="false">miles_distance_units</string>
+
+    <!-- amount settings -->
+    <string name="pref_amount_units_label">Amount units</string>
+    <string name="pref_amount_units_label_us_gallon">US gallon</string>
+    <string name="pref_amount_units_label_imperial_gallon">Imperial gallon</string>
+    <string name="pref_amount_units_label_litres">Litres</string>
+
+    <string name="pref_amount_units_key" translatable="false">amount_unit</string>
+    <string name="pref_amount_units_litres" translatable="false">amount_liter_units</string>
+    <string name="pref_amount_units_us_gallon" translatable="false">amount_us_gallon_units</string>
+    <string name="pref_amount_units_imperial_gallon" translatable="false">amount_imperial_gallon_units</string>
 </resources>

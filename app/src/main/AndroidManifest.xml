@@ -28,6 +28,9 @@
             android:name=".LogDetailActivity"
             android:label="@string/title_activity_log_detail" >
         </activity>
+        <activity android:name=".SettingsActivity"
+            android:label="Settings">
+        </activity>
         <provider
             android:authorities="com.crmejia.gasola"
             android:name=".data.LogProvider"/>

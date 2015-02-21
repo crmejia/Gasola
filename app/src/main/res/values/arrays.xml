@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_distance_units_values">
+        <item>@string/pref_distance_units_label_kilometers</item>
+        <item>@string/pref_distance_units_label_miles</item>
+    </string-array>
+    <string-array name="pref_distance_units_options">
+        <item>@string/pref_distance_units_kilometers</item>
+        <item>@string/pref_distance_units_miles</item>
+    </string-array>
+    <string-array name="pref_amount_units_values">
+        <item>@string/pref_amount_units_label_imperial_gallon</item>
+        <item>@string/pref_amount_units_label_us_gallon</item>
+        <item>@string/pref_amount_units_label_litres</item>
+    </string-array>
+    <string-array name="pref_amount_units_options">
+        <item>@string/pref_amount_units_imperial_gallon</item>
+        <item>@string/pref_amount_units_us_gallon</item>
+        <item>@string/pref_amount_units_litres</item>
+    </string-array>
+</resources>

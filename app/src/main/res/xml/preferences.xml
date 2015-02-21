@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:title="@string/pref_distance_units_label"
+        android:key="@string/pref_distance_units_key"
+        android:defaultValue="@string/pref_distance_units_kilometers"
+        android:entryValues="@array/pref_distance_units_values"
+        android:entries="@array/pref_distance_units_options" />
+    <ListPreference
+        android:title="@string/pref_amount_units_label"
+        android:key="@string/pref_amount_units_key"
+        android:defaultValue="@string/pref_amount_units_litres"
+        android:entryValues="@array/pref_amount_units_values"
+        android:entries="@array/pref_amount_units_options" />
+</PreferenceScreen>
