@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.crmejia.gasola.data.LogContract;
 
@@ -117,7 +118,25 @@ public class MainActivity extends Activity {
                     0
             );
 
-//            TODO mLogAdapter.setViewBinder( );
+            mLogAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                @Override
+                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    switch (columnIndex){
+                        case COL_LOG_START_DISTANCE:
+                            int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
+                            if(endDistance > 0) {
+                                ((TextView) view).setText(Utility.formattedTotalDistance(cursor.getInt(columnIndex), endDistance, getActivity()));
+                            }
+                            else
+                                ((TextView)view).setText("Logging...");
+                            return true;
+                        case COL_LOG_GAS_AMOUNT:
+                            ((TextView)view).setText(String.format("%s %s", cursor.getInt(columnIndex), Utility.getAmountUnit(getActivity())));
+                            return true;
+                    }
+                    return false;
+                }
+            });
 
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -175,32 +194,6 @@ public class MainActivity extends Activity {
                     }
                 }
             });
-
-
-//            if(newLogCursor.moveToLast()) {
-//                if(newLogCursor.getInt(COL_LOG_END_DISTANCE) == 0) {
-////                a log is open
-//                    mCurrentLogButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            String idString = newLogCursor.getString(COL_LOG_ID);
-//
-//                            Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
-//                                    .putExtra(Intent.EXTRA_TEXT, idString);
-//                            startActivity(endLogIntent);
-//                        }
-//                    });
-//                } else {
-////                    no log is open, create a new one
-//                    mNewLogButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            Intent newLogIntent = new Intent(getActivity(), NewLogActivity.class);
-//                            startActivity(newLogIntent);
-//                        }
-//                    });
-//                }
-//            }
 
             return rootView;
         }

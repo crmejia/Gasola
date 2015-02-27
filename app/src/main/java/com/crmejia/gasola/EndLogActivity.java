@@ -93,6 +93,8 @@ public class EndLogActivity extends Activity {
             mCancelLogButton = (Button) rootView.findViewById(R.id.cancel_log_button);
             mEndLogButton = (Button) rootView.findViewById(R.id.end_log_button);
 
+            String startDistance = String.format(getString(R.string.new_log_distance), Utility.getDistanceUnit(getActivity()));
+            ((TextView)rootView.findViewById(R.id.end_distance_textView)).setText(startDistance);
             Intent intent = getActivity().getIntent();
             final ContentResolver contentResolver = getActivity().getContentResolver();
 

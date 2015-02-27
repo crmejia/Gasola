@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="What is your current distance traveled?"
+        android:id="@+id/end_distance_textView"
         android:layout_gravity="center_horizontal" />
 
     <EditText

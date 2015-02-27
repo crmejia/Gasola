@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.crmejia.gasola.data.LogContract;
 
@@ -62,7 +63,6 @@ public class NewLogActivity extends Activity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
-        private Button mStartLogButton;
         private final String LOG_TAG = MainActivity.class.getSimpleName();
 
         public PlaceholderFragment() {
@@ -72,13 +72,28 @@ public class NewLogActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_new_log, container, false);
-            mStartLogButton = (Button)rootView.findViewById(R.id.start_log_button);
+            TextView gasAmountTextView = (TextView)rootView.findViewById(R.id.gas_amount_textView);
+            TextView startDistanceTextView = (TextView)rootView.findViewById(R.id.start_distance_textView);
+            Button startLogButton = (Button)rootView.findViewById(R.id.start_log_button);
+            Button cancelLogButton = (Button)rootView.findViewById(R.id.cancel_log_button);
 
-            mStartLogButton.setOnClickListener(new View.OnClickListener() {
+            String gasAmount = String.format(getString(R.string.new_log_amount), Utility.getAmountUnit(getActivity()));
+            String startDistance = String.format(getString(R.string.new_log_distance), Utility.getDistanceUnit(getActivity()));
+            gasAmountTextView.setText(gasAmount);
+            startDistanceTextView.setText(startDistance);
+
+            startLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if(createNewLog())
                         getActivity().finish();
+                }
+            });
+
+            cancelLogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getActivity().finish();
                 }
             });
 
