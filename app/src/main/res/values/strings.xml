@@ -10,6 +10,9 @@
     <string name="new_log_amount">How many %s did you put in?</string>
     <string name="new_log_distance">How many %s have you travelled?</string>
 
+    <string name="fuel_economy">Your fuel economy is %s . </string>
+    <string name="fuel_consumption">Your fuel consumption is %s . </string>
+
 
     <!--****************************************************************************-->
     <!--Settings-->

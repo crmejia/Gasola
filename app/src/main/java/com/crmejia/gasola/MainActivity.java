@@ -85,6 +85,10 @@ public class MainActivity extends Activity {
         public static final int COL_LOG_START_DISTANCE = 3;
         public static final int COL_LOG_END_DISTANCE = 4;
         public static final int COL_LOG_GAS_AMOUNT = 5;
+        private TextView mfuelEconomyTextVIew;
+        private TextView mfuelConsumptiomTextView;
+        private float mAverageFuelConsumption = -1;
+        private float mAverageFuelEconomy = -1;
 
 
         public PlaceholderFragment() {
@@ -139,7 +143,11 @@ public class MainActivity extends Activity {
             });
 
 
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            mfuelEconomyTextVIew = (TextView) rootView.findViewById(R.id.fuel_economy_textView);
+            mfuelConsumptiomTextView = (TextView) rootView.findViewById(R.id.fuel_consumption_textView);
 
             ListView listView = (ListView) rootView.findViewById(R.id.listView_logs);
             listView.setAdapter(mLogAdapter);
@@ -216,12 +224,38 @@ public class MainActivity extends Activity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             mLogAdapter.swapCursor(data);
+            if(mAverageFuelConsumption < 0 && mAverageFuelEconomy < 0 ) {
+                calculateAverageFuel(data);
+                mfuelConsumptiomTextView.setText(Utility.formattedfuelConsumption(mAverageFuelConsumption, getActivity()));
+                mfuelEconomyTextVIew.setText(Utility.formattedfuelEconomy(mAverageFuelEconomy, getActivity()));
+            }
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             mLogAdapter.swapCursor(null);
 
+        }
+
+        private void calculateAverageFuel(Cursor cursor){
+            float averageFuelConsumption = 0;
+            float averageFuelEconomy = 0;
+
+            if(cursor != null){
+                int distance, amount, count =0 ;
+                while(cursor.moveToNext()){
+                    distance = cursor.getInt(COL_LOG_END_DISTANCE) - cursor.getInt(COL_LOG_START_DISTANCE);
+                    if(distance > 0) {
+                        count++;
+                        amount = cursor.getInt(COL_LOG_GAS_AMOUNT);
+                        averageFuelConsumption += Utility.fuelConsumption(distance, amount);
+                        averageFuelEconomy += Utility.fuelEconomy(distance, amount);
+                    }
+                }
+                //use count and not cursor.getCount() because we skip current log
+                mAverageFuelConsumption = averageFuelConsumption / count;
+                mAverageFuelEconomy = averageFuelEconomy / count;
+            }
         }
     }
 }
