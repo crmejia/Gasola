@@ -4,24 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView android:id="@+id/textview_fuel_economy" android:text="Your fuel economy is 20 km/L" android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/fuel_economy_textView" android:text="@string/fuel_economy" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <TextView android:id="@+id/textview_fuel_consumption" android:text="Your fuel consumption is 2 litres per 100 km(G/100mi)" android:layout_width="wrap_content"
+    <TextView android:id="@+id/fuel_consumption_textView" android:text="@string/fuel_consumption" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Log"
-        android:id="@+id/new_log_button"
-        android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="current Log"
-        android:id="@+id/current_log_button"
+        android:text="@string/current_log_button_string"
+        android:id="@+id/current_new_log_button"
         android:layout_gravity="center_horizontal" />
 
     <ListView

@@ -93,6 +93,8 @@ public class EndLogActivity extends Activity {
             mCancelLogButton = (Button) rootView.findViewById(R.id.cancel_log_button);
             mEndLogButton = (Button) rootView.findViewById(R.id.end_log_button);
 
+            String startDistance = String.format(getString(R.string.new_log_distance), Utility.getDistanceUnit(getActivity()));
+            ((TextView)rootView.findViewById(R.id.end_distance_textView)).setText(startDistance);
             Intent intent = getActivity().getIntent();
             final ContentResolver contentResolver = getActivity().getContentResolver();
 
@@ -102,7 +104,7 @@ public class EndLogActivity extends Activity {
                     @Override
                     public void onClick(View view) {
                         contentResolver.delete(LogContract.LogEntry.CONTENT_URI, LogProvider._ID_SELECTION, logIdString);
-                        Log.d(LOG_TAG, logIdString[0]);
+                        getActivity().setResult(RESULT_OK, null);
                         getActivity().finish();
                     }
                 });
@@ -121,7 +123,7 @@ public class EndLogActivity extends Activity {
                                     logIdString,
                                     null);
                             if(currentLogCursor.moveToFirst()){
-                            int startDistance = currentLogCursor.getInt(COL_LOG_START_DISTANCE);
+                                int startDistance = currentLogCursor.getInt(COL_LOG_START_DISTANCE);
                                 //only allow end distance which is longer than start distance
                                 if(startDistance < endDistance){
                                     ContentValues endDistanceValue = new ContentValues();
@@ -132,9 +134,9 @@ public class EndLogActivity extends Activity {
                                             LogProvider._ID_SELECTION,
                                             logIdString
                                     );
+                                    getActivity().setResult(RESULT_OK, null);
                                     getActivity().finish();
-                            }
-
+                                }
                             } else{
                                 Utility.toastDistance(getActivity());
                             }

@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.crmejia.gasola.data.LogContract;
 
@@ -62,10 +63,27 @@ public class MainActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
         private Button mNewLogButton;
-        private Button mCurrentLogButton;
+        private Button mCurrentNewLogButton;
         private SimpleCursorAdapter mLogAdapter;
 
         private static final int LOG_LOADER = 1;
+        static final int NEW_LOG_REQUEST =1;
+        static final int END_LOG_REQUEST =2;
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if(requestCode == NEW_LOG_REQUEST){
+                //a new log was started we should change the button text to current log
+                if(resultCode == RESULT_OK){
+                    mCurrentNewLogButton.setText(getString(R.string.current_log_button_string));
+                }
+            } else if(requestCode == END_LOG_REQUEST){
+                //log was finalized or deleted we should change the button text to new log
+                if(resultCode == RESULT_OK){
+                    mCurrentNewLogButton.setText(getString(R.string.new_log_button_string));
+                }
+            }
+        }
 
         //projection
         private static final String[] LOG_COLUMNS={
@@ -84,6 +102,10 @@ public class MainActivity extends Activity {
         public static final int COL_LOG_START_DISTANCE = 3;
         public static final int COL_LOG_END_DISTANCE = 4;
         public static final int COL_LOG_GAS_AMOUNT = 5;
+        private TextView mfuelEconomyTextVIew;
+        private TextView mfuelConsumptiomTextView;
+        private float mAverageFuelConsumption = -1;
+        private float mAverageFuelEconomy = -1;
 
 
         public PlaceholderFragment() {
@@ -117,10 +139,32 @@ public class MainActivity extends Activity {
                     0
             );
 
-//            TODO mLogAdapter.setViewBinder( );
+            mLogAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+                @Override
+                public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    switch (columnIndex){
+                        case COL_LOG_START_DISTANCE:
+                            int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
+                            if(endDistance > 0) {
+                                ((TextView) view).setText(Utility.formattedTotalDistance(cursor.getInt(columnIndex), endDistance, getActivity()));
+                            }
+                            else
+                                ((TextView)view).setText("Logging...");
+                            return true;
+                        case COL_LOG_GAS_AMOUNT:
+                            ((TextView)view).setText(String.format("%s %s", cursor.getInt(columnIndex), Utility.getAmountUnit(getActivity())));
+                            return true;
+                    }
+                    return false;
+                }
+            });
+
 
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            mfuelEconomyTextVIew = (TextView) rootView.findViewById(R.id.fuel_economy_textView);
+            mfuelConsumptiomTextView = (TextView) rootView.findViewById(R.id.fuel_consumption_textView);
 
             ListView listView = (ListView) rootView.findViewById(R.id.listView_logs);
             listView.setAdapter(mLogAdapter);
@@ -130,77 +174,59 @@ public class MainActivity extends Activity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     Cursor cursor = mLogAdapter.getCursor();
                     if(cursor != null && cursor.moveToPosition(position)) {
-                        String gasAmount = cursor.getString(COL_LOG_GAS_AMOUNT);
-                        String startDistance = cursor.getString(COL_LOG_START_DISTANCE);
-                        String endDistance = cursor.getString(COL_LOG_END_DISTANCE);
-                        String startDate = cursor.getString(COL_LOG_START_DATE);
-                        String endDate = cursor.getString(COL_LOG_END_DATE);
+                        int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
 
-                        String extraString = String.format("%s litres - %s km - %s km   %s   %s",
-                                gasAmount, startDistance, endDistance, startDate, endDate);
+                        if(endDistance != 0) {
+                            String gasAmount = cursor.getString(COL_LOG_GAS_AMOUNT);
+                            String startDistance = cursor.getString(COL_LOG_START_DISTANCE);
+                            String startDate = cursor.getString(COL_LOG_START_DATE);
+                            String endDate = cursor.getString(COL_LOG_END_DATE);
 
-                        Intent logDetailIntent = new Intent(getActivity(), LogDetailActivity.class)
-                                .putExtra(Intent.EXTRA_TEXT, extraString);
+                            String extraString = String.format("%s litres - %s km - %s km   %s   %s",
+                                    gasAmount, startDistance, endDistance, startDate, endDate);
 
-                        startActivity(logDetailIntent);
+                            Intent logDetailIntent = new Intent(getActivity(), LogDetailActivity.class)
+                                    .putExtra(Intent.EXTRA_TEXT, extraString);
+
+                            startActivity(logDetailIntent);
+                        } else {
+                            //this is the current log, send to endlogactivity
+                            String idString = cursor.getString(COL_LOG_ID);
+                            Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
+                                    .putExtra(Intent.EXTRA_TEXT, idString);
+                            startActivityForResult(endLogIntent, END_LOG_REQUEST);
+                        }
                     }
                 }
             });
 
-            mNewLogButton = (Button) rootView.findViewById(R.id.new_log_button);
-            mCurrentLogButton = (Button) rootView.findViewById(R.id.current_log_button);
+//            mNewLogButton = (Button) rootView.findViewById(R.id.new_log_button);
+            mCurrentNewLogButton = (Button) rootView.findViewById(R.id.current_new_log_button);
+            Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
 
-            mCurrentLogButton.setOnClickListener(new View.OnClickListener() {
+            if (currentLogCursor.moveToLast() && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0)
+                mCurrentNewLogButton.setText(getString(R.string.current_log_button_string));
+            else
+                mCurrentNewLogButton.setText(getString(R.string.new_log_button_string));
+
+
+            mCurrentNewLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI,LOG_COLUMNS,null,null,null);
-                    if (currentLogCursor.moveToLast() && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0) {
+                    Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
+                    boolean lastLog = currentLogCursor.moveToLast();
+                    if (lastLog && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0) {
+                        mCurrentNewLogButton.setText(getString(R.string.current_log_button_string));
                         String idString = currentLogCursor.getString(COL_LOG_ID);
-
                         Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
                                 .putExtra(Intent.EXTRA_TEXT, idString);
-                        startActivity(endLogIntent);
-
-                    }
-                }
-            });
-
-            mNewLogButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI,LOG_COLUMNS,null,null,null);
-                    if (currentLogCursor.moveToLast() && currentLogCursor.getInt(COL_LOG_END_DISTANCE) != 0) {
+                        startActivityForResult(endLogIntent, END_LOG_REQUEST);
+                    } else if (lastLog && currentLogCursor.getInt(COL_LOG_END_DISTANCE) != 0) {
                         Intent newLogIntent = new Intent(getActivity(), NewLogActivity.class);
-                        startActivity(newLogIntent);
+                        startActivityForResult(newLogIntent, NEW_LOG_REQUEST);
                     }
                 }
             });
-
-
-//            if(newLogCursor.moveToLast()) {
-//                if(newLogCursor.getInt(COL_LOG_END_DISTANCE) == 0) {
-////                a log is open
-//                    mCurrentLogButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            String idString = newLogCursor.getString(COL_LOG_ID);
-//
-//                            Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
-//                                    .putExtra(Intent.EXTRA_TEXT, idString);
-//                            startActivity(endLogIntent);
-//                        }
-//                    });
-//                } else {
-////                    no log is open, create a new one
-//                    mNewLogButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            Intent newLogIntent = new Intent(getActivity(), NewLogActivity.class);
-//                            startActivity(newLogIntent);
-//                        }
-//                    });
-//                }
-//            }
 
             return rootView;
         }
@@ -223,12 +249,38 @@ public class MainActivity extends Activity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             mLogAdapter.swapCursor(data);
+            if(mAverageFuelConsumption < 0 && mAverageFuelEconomy < 0 ) {
+                calculateAverageFuel(data);
+                mfuelConsumptiomTextView.setText(Utility.formattedfuelConsumption(mAverageFuelConsumption, getActivity()));
+                mfuelEconomyTextVIew.setText(Utility.formattedfuelEconomy(mAverageFuelEconomy, getActivity()));
+            }
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             mLogAdapter.swapCursor(null);
 
+        }
+
+        private void calculateAverageFuel(Cursor cursor){
+            float averageFuelConsumption = 0;
+            float averageFuelEconomy = 0;
+
+            if(cursor != null){
+                int distance, amount, count =0 ;
+                while(cursor.moveToNext()){
+                    distance = cursor.getInt(COL_LOG_END_DISTANCE) - cursor.getInt(COL_LOG_START_DISTANCE);
+                    if(distance > 0) {
+                        count++;
+                        amount = cursor.getInt(COL_LOG_GAS_AMOUNT);
+                        averageFuelConsumption += Utility.fuelConsumption(distance, amount);
+                        averageFuelEconomy += Utility.fuelEconomy(distance, amount);
+                    }
+                }
+                //use count and not cursor.getCount() because we skip current log
+                mAverageFuelConsumption = averageFuelConsumption / count;
+                mAverageFuelEconomy = averageFuelEconomy / count;
+            }
         }
     }
 }
