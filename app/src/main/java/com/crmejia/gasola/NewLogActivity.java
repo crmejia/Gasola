@@ -85,7 +85,9 @@ public class NewLogActivity extends Activity {
             startLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(createNewLog())
+                    if(createNewLog()){
+                        getActivity().setResult(RESULT_OK, null);
+                    }
                         getActivity().finish();
                 }
             });

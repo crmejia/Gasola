@@ -13,6 +13,8 @@
     <string name="fuel_economy">Your fuel economy is %s . </string>
     <string name="fuel_consumption">Your fuel consumption is %s . </string>
 
+    <string name="new_log_button_string">New Log</string>
+    <string name="current_log_button_string">current Log</string>
 
     <!--****************************************************************************-->
     <!--Settings-->

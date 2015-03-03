@@ -14,15 +14,8 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Log"
-        android:id="@+id/new_log_button"
-        android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="current Log"
-        android:id="@+id/current_log_button"
+        android:text="@string/current_log_button_string"
+        android:id="@+id/current_new_log_button"
         android:layout_gravity="center_horizontal" />
 
     <ListView

@@ -63,10 +63,27 @@ public class MainActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
         private Button mNewLogButton;
-        private Button mCurrentLogButton;
+        private Button mCurrentNewLogButton;
         private SimpleCursorAdapter mLogAdapter;
 
         private static final int LOG_LOADER = 1;
+        static final int NEW_LOG_REQUEST =1;
+        static final int END_LOG_REQUEST =2;
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if(requestCode == NEW_LOG_REQUEST){
+                //a new log was started we should change the button text to current log
+                if(resultCode == RESULT_OK){
+                    mCurrentNewLogButton.setText(getString(R.string.current_log_button_string));
+                }
+            } else if(requestCode == END_LOG_REQUEST){
+                //log was finalized or deleted we should change the button text to new log
+                if(resultCode == RESULT_OK){
+                    mCurrentNewLogButton.setText(getString(R.string.new_log_button_string));
+                }
+            }
+        }
 
         //projection
         private static final String[] LOG_COLUMNS={
@@ -174,31 +191,30 @@ public class MainActivity extends Activity {
                 }
             });
 
-            mNewLogButton = (Button) rootView.findViewById(R.id.new_log_button);
-            mCurrentLogButton = (Button) rootView.findViewById(R.id.current_log_button);
+//            mNewLogButton = (Button) rootView.findViewById(R.id.new_log_button);
+            mCurrentNewLogButton = (Button) rootView.findViewById(R.id.current_new_log_button);
+            Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
 
-            mCurrentLogButton.setOnClickListener(new View.OnClickListener() {
+            if (currentLogCursor.moveToLast() && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0)
+                mCurrentNewLogButton.setText(getString(R.string.current_log_button_string));
+            else
+                mCurrentNewLogButton.setText(getString(R.string.new_log_button_string));
+
+
+            mCurrentNewLogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI,LOG_COLUMNS,null,null,null);
-                    if (currentLogCursor.moveToLast() && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0) {
+                    Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
+                    boolean lastLog = currentLogCursor.moveToLast();
+                    if (lastLog && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0) {
+                        mCurrentNewLogButton.setText(getString(R.string.current_log_button_string));
                         String idString = currentLogCursor.getString(COL_LOG_ID);
-
                         Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
                                 .putExtra(Intent.EXTRA_TEXT, idString);
-                        startActivity(endLogIntent);
-
-                    }
-                }
-            });
-
-            mNewLogButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI,LOG_COLUMNS,null,null,null);
-                    if (currentLogCursor.moveToLast() && currentLogCursor.getInt(COL_LOG_END_DISTANCE) != 0) {
+                        startActivityForResult(endLogIntent, END_LOG_REQUEST);
+                    } else if (lastLog && currentLogCursor.getInt(COL_LOG_END_DISTANCE) != 0) {
                         Intent newLogIntent = new Intent(getActivity(), NewLogActivity.class);
-                        startActivity(newLogIntent);
+                        startActivityForResult(newLogIntent, NEW_LOG_REQUEST);
                     }
                 }
             });
