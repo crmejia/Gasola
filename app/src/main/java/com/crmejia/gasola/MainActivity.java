@@ -174,19 +174,28 @@ public class MainActivity extends Activity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     Cursor cursor = mLogAdapter.getCursor();
                     if(cursor != null && cursor.moveToPosition(position)) {
-                        String gasAmount = cursor.getString(COL_LOG_GAS_AMOUNT);
-                        String startDistance = cursor.getString(COL_LOG_START_DISTANCE);
-                        String endDistance = cursor.getString(COL_LOG_END_DISTANCE);
-                        String startDate = cursor.getString(COL_LOG_START_DATE);
-                        String endDate = cursor.getString(COL_LOG_END_DATE);
+                        int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
 
-                        String extraString = String.format("%s litres - %s km - %s km   %s   %s",
-                                gasAmount, startDistance, endDistance, startDate, endDate);
+                        if(endDistance != 0) {
+                            String gasAmount = cursor.getString(COL_LOG_GAS_AMOUNT);
+                            String startDistance = cursor.getString(COL_LOG_START_DISTANCE);
+                            String startDate = cursor.getString(COL_LOG_START_DATE);
+                            String endDate = cursor.getString(COL_LOG_END_DATE);
 
-                        Intent logDetailIntent = new Intent(getActivity(), LogDetailActivity.class)
-                                .putExtra(Intent.EXTRA_TEXT, extraString);
+                            String extraString = String.format("%s litres - %s km - %s km   %s   %s",
+                                    gasAmount, startDistance, endDistance, startDate, endDate);
 
-                        startActivity(logDetailIntent);
+                            Intent logDetailIntent = new Intent(getActivity(), LogDetailActivity.class)
+                                    .putExtra(Intent.EXTRA_TEXT, extraString);
+
+                            startActivity(logDetailIntent);
+                        } else {
+                            //this is the current log, send to endlogactivity
+                            String idString = cursor.getString(COL_LOG_ID);
+                            Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
+                                    .putExtra(Intent.EXTRA_TEXT, idString);
+                            startActivityForResult(endLogIntent, END_LOG_REQUEST);
+                        }
                     }
                 }
             });
