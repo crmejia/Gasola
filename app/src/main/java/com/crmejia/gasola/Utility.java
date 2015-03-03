@@ -10,7 +10,11 @@ import android.widget.Toast;
  */
 public class Utility {
     public static void toastDistance(Context context){
-        Toast.makeText(context, "distance should be a valid number", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "What is your current distance on your dashboard?", Toast.LENGTH_SHORT).show();
+    }
+
+    public static void toastAmount(Context context) {
+        Toast.makeText(context, "How much gas did you put in?", Toast.LENGTH_SHORT).show();
     }
 
     public static String formattedTotalDistance(int startDistance, int endDistance, Context context){
@@ -55,4 +59,5 @@ public class Utility {
                 + " " + getAmountUnit(context) + " per 100 " + getDistanceUnit(context);
         return String.format(context.getString(R.string.fuel_consumption), unit);
     }
+
 }

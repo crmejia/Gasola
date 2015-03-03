@@ -87,8 +87,8 @@ public class NewLogActivity extends Activity {
                 public void onClick(View view) {
                     if(createNewLog()){
                         getActivity().setResult(RESULT_OK, null);
-                    }
                         getActivity().finish();
+                    }
                 }
             });
 
@@ -102,33 +102,48 @@ public class NewLogActivity extends Activity {
             return rootView;
         }
         private boolean createNewLog(){
-            //TODO read input & validate
+            //read input & validate
             String gasAmountString = ((EditText) getView().findViewById(R.id.gas_amount_editText)).getText().toString();
             String startDistanceString = ((EditText) getView().findViewById(R.id.start_distance_editText)).getText().toString();
+            int gasAmount = 0, startDistance = 0;
+            try {
+                gasAmount = Integer.parseInt(gasAmountString);
+            } catch (NumberFormatException e) {
+                Utility.toastAmount(getActivity());
+                Log.i(LOG_TAG, e.getMessage());
+                return false;
+            }
 
             try {
-                int gasAmount = Integer.parseInt(gasAmountString);
-                int startDistance = Integer.parseInt(startDistanceString);
-                if(gasAmount > 0 && startDistance > 0) {
-                    //TODO  get contentProvider from resolver and insertdata
-                    ContentValues newLogValues = new ContentValues();
-                    newLogValues.put(LogContract.LogEntry.COLUMN_START_DISTANCE, startDistance);
-                    newLogValues.put(LogContract.LogEntry.COLUMN_GAS_AMOUNT, gasAmount);
-                    newLogValues.put(LogContract.LogEntry.COLUMN_START_DATE, LogContract.LogEntry.getDbDateString(new Date()));
-
-                    // fake values, should be null?
-                    newLogValues.put(LogContract.LogEntry.COLUMN_END_DISTANCE, 0);
-                    newLogValues.put(LogContract.LogEntry.COLUMN_END_DATE, LogContract.LogEntry.getDbDateString(new Date()));
-
-
-                    Uri newLogUri = getActivity().getContentResolver().insert(LogContract.LogEntry.CONTENT_URI, newLogValues);
-
-                    if (ContentUris.parseId(newLogUri) != -1)
-                        return true;
-                }
+                startDistance = Integer.parseInt(startDistanceString);
             } catch (NumberFormatException e) {
+                Utility.toastDistance(getActivity());
                 Log.i(LOG_TAG, e.getMessage());
+                return false;
             }
+            if(gasAmount > 0 && startDistance > 0) {
+                //get contentProvider from resolver and insertdata
+                ContentValues newLogValues = new ContentValues();
+                newLogValues.put(LogContract.LogEntry.COLUMN_START_DISTANCE, startDistance);
+                newLogValues.put(LogContract.LogEntry.COLUMN_GAS_AMOUNT, gasAmount);
+                newLogValues.put(LogContract.LogEntry.COLUMN_START_DATE, LogContract.LogEntry.getDbDateString(new Date()));
+
+                // fake values, should be null?
+                newLogValues.put(LogContract.LogEntry.COLUMN_END_DISTANCE, 0);
+                newLogValues.put(LogContract.LogEntry.COLUMN_END_DATE, LogContract.LogEntry.getDbDateString(new Date()));
+
+
+                Uri newLogUri = getActivity().getContentResolver().insert(LogContract.LogEntry.CONTENT_URI, newLogValues);
+
+                if (ContentUris.parseId(newLogUri) != -1)
+                    return true;
+            }else{
+                if(gasAmount <= 0)
+                    Utility.toastAmount(getActivity());
+                else if (startDistance <= 0)
+                    Utility.toastDistance(getActivity());
+            }
+
             return  false;
         }
     }
