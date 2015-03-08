@@ -163,6 +163,10 @@ public class MainActivity extends Activity {
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+            //set fuel economy and consumption units
+            ((TextView) rootView.findViewById(R.id.fuel_economy_unit_textView)).setText(Utility.formattedfuelEconomyUnit(getActivity()));
+            ((TextView) rootView.findViewById(R.id.fuel_consumption_unit_textView)).setText(Utility.formattedfuelConsumptionUnit(getActivity()));
+
             mfuelEconomyTextVIew = (TextView) rootView.findViewById(R.id.fuel_economy_textView);
             mfuelConsumptiomTextView = (TextView) rootView.findViewById(R.id.fuel_consumption_textView);
 
@@ -200,7 +204,6 @@ public class MainActivity extends Activity {
                 }
             });
 
-//            mNewLogButton = (Button) rootView.findViewById(R.id.new_log_button);
             mCurrentNewLogButton = (Button) rootView.findViewById(R.id.current_new_log_button);
             Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
 

@@ -49,15 +49,19 @@ public class Utility {
     }
 
     public static String formattedfuelEconomy(float fuelEconomy, Context context){
-        String unit = Integer.toString(Math.round(fuelEconomy))
-                + " " + getDistanceUnit(context) + " per " + getAmountUnit(context);
-        return String.format(context.getString(R.string.fuel_economy), unit);
+        return Integer.toString(Math.round(fuelEconomy));
+    }
+
+    public static String formattedfuelEconomyUnit(Context context){
+        return getDistanceUnit(context) + " per " + getAmountUnit(context);
     }
 
     public static String formattedfuelConsumption(float fuelConsumption, Context context){
-        String unit = Integer.toString(Math.round(fuelConsumption))
-                + " " + getAmountUnit(context) + " per 100 " + getDistanceUnit(context);
-        return String.format(context.getString(R.string.fuel_consumption), unit);
+        return Integer.toString(Math.round(fuelConsumption));
+    }
+
+    public static String formattedfuelConsumptionUnit(Context context){
+        return getAmountUnit(context) + " per 100 " + getDistanceUnit(context);
     }
 
 }
