@@ -4,44 +4,32 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-
+        android:orientation="horizontal">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="10 litres"
             android:id="@+id/list_item_log_quantity_textView"
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-condensed"
-            android:textSize="22sp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" - "
-            android:fontFamily="sans-serif-condensed"
-            android:textSize="22sp"/>
+            android:textSize="22sp"
+            android:gravity="center_horizontal"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="40 kilometers"
             android:id="@+id/list_item_log_distance_textView"
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-condensed"
-            android:textSize="22sp"/>
+            android:textSize="22sp"
+            android:gravity="center_horizontal"/>
 
         </LinearLayout>
-
-
-    <!--TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lasted 2 days"
-        android:id="@+id/list_item_log_period_textView"
-        android:layout_gravity="center_horizontal" /-->
 
     <TextView
         android:layout_width="wrap_content"
@@ -59,5 +47,5 @@
         android:id="@+id/list_item_log_end_date_textView"
         android:layout_gravity="center_horizontal"
         android:fontFamily="sans-serif-condensed"
-        android:textSize="22sp"/>
+        android:textSize="16sp"/>
 </LinearLayout>

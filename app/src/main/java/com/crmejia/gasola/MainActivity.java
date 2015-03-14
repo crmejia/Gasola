@@ -142,9 +142,9 @@ public class MainActivity extends Activity {
             mLogAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
                 @Override
                 public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
                     switch (columnIndex){
                         case COL_LOG_START_DISTANCE:
-                            int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
                             if(endDistance > 0) {
                                 ((TextView) view).setText(Utility.formattedTotalDistance(cursor.getInt(columnIndex), endDistance, getActivity()));
                             }
@@ -153,6 +153,16 @@ public class MainActivity extends Activity {
                             return true;
                         case COL_LOG_GAS_AMOUNT:
                             ((TextView)view).setText(String.format("%s %s", cursor.getInt(columnIndex), Utility.getAmountUnit(getActivity())));
+                            return true;
+                        case COL_LOG_START_DATE:
+                            ((TextView)view).setText(String.format("From %s",Utility.getFriendlyDayString(getActivity(),cursor.getString(columnIndex))));
+                            return true;
+                        case COL_LOG_END_DATE:
+                            String text = "";
+                            if(endDistance > 0) {
+                                text = String.format("Until %s", Utility.getFriendlyDayString(getActivity(), cursor.getString(columnIndex)));
+                            }
+                            ((TextView) view).setText(text);
                             return true;
                     }
                     return false;
