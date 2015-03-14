@@ -142,9 +142,9 @@ public class MainActivity extends Activity {
             mLogAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
                 @Override
                 public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                    int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
                     switch (columnIndex){
                         case COL_LOG_START_DISTANCE:
-                            int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
                             if(endDistance > 0) {
                                 ((TextView) view).setText(Utility.formattedTotalDistance(cursor.getInt(columnIndex), endDistance, getActivity()));
                             }
@@ -154,6 +154,16 @@ public class MainActivity extends Activity {
                         case COL_LOG_GAS_AMOUNT:
                             ((TextView)view).setText(String.format("%s %s", cursor.getInt(columnIndex), Utility.getAmountUnit(getActivity())));
                             return true;
+                        case COL_LOG_START_DATE:
+                            ((TextView)view).setText(String.format("From %s",Utility.getFriendlyDayString(getActivity(),cursor.getString(columnIndex))));
+                            return true;
+                        case COL_LOG_END_DATE:
+                            String text = "";
+                            if(endDistance > 0) {
+                                text = String.format("Until %s", Utility.getFriendlyDayString(getActivity(), cursor.getString(columnIndex)));
+                            }
+                            ((TextView) view).setText(text);
+                            return true;
                     }
                     return false;
                 }
@@ -162,6 +172,10 @@ public class MainActivity extends Activity {
 
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            //set fuel economy and consumption units
+            ((TextView) rootView.findViewById(R.id.fuel_economy_unit_textView)).setText(Utility.formattedfuelEconomyUnit(getActivity()));
+            ((TextView) rootView.findViewById(R.id.fuel_consumption_unit_textView)).setText(Utility.formattedfuelConsumptionUnit(getActivity()));
 
             mfuelEconomyTextVIew = (TextView) rootView.findViewById(R.id.fuel_economy_textView);
             mfuelConsumptiomTextView = (TextView) rootView.findViewById(R.id.fuel_consumption_textView);
@@ -200,7 +214,6 @@ public class MainActivity extends Activity {
                 }
             });
 
-//            mNewLogButton = (Button) rootView.findViewById(R.id.new_log_button);
             mCurrentNewLogButton = (Button) rootView.findViewById(R.id.current_new_log_button);
             Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
 
