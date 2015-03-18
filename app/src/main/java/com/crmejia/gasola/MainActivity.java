@@ -154,7 +154,7 @@ public class MainActivity extends Activity {
                                 ((TextView)view).setText("Logging...");
                             return true;
                         case COL_LOG_GAS_AMOUNT:
-                            ((TextView)view).setText(String.format("%s %s", cursor.getInt(columnIndex), Utility.getAmountUnit(getActivity())));
+                            ((TextView)view).setText(Utility.formattedAmount(cursor.getInt(columnIndex),getActivity()));
                             return true;
                         case COL_LOG_START_DATE:
                             ((TextView)view).setText(String.format("From %s",Utility.getFriendlyDayString(getActivity(),cursor.getString(columnIndex))));
@@ -286,10 +286,10 @@ public class MainActivity extends Activity {
             if(cursor != null){
                 int distance, amount, count =0 ;
                 while(cursor.moveToNext()){
-                    distance = cursor.getInt(COL_LOG_END_DISTANCE) - cursor.getInt(COL_LOG_START_DISTANCE);
+                    distance = Utility.properDistance(cursor.getInt(COL_LOG_END_DISTANCE) - cursor.getInt(COL_LOG_START_DISTANCE),getActivity());
                     if(distance > 0) {
                         count++;
-                        amount = cursor.getInt(COL_LOG_GAS_AMOUNT);
+                        amount = Utility.properAmount(cursor.getInt(COL_LOG_GAS_AMOUNT),getActivity());
                         averageFuelConsumption += Utility.fuelConsumption(distance, amount);
                         averageFuelEconomy += Utility.fuelEconomy(distance, amount);
                     }

@@ -16,6 +16,14 @@ import java.util.Date;
  * Created by crismarmejia on 2/19/15.
  */
 public class Utility {
+
+    public static final float KM_TO_MILES_CONSTANT = 0.62137f;
+    public static final float LITER_TO_US_GALLON_CONSTANT = 0.264172f;
+    public static final float LITER_TO_IMPERIAL_GALLO_CONSTANT = 0.219969f;
+    public static final double MILE_TO_KILOMETER_CONSTANT = 1.60934;
+    public static final double IMPERIAL_GAL_TO_LITER = 4.54609;
+    public static final double US_GAL_TO_LITER = 3.78541;
+
     public static void toastDistance(Context context){
         Toast.makeText(context, "What is your current distance on your dashboard?", Toast.LENGTH_SHORT).show();
     }
@@ -25,8 +33,13 @@ public class Utility {
     }
 
     public static String formattedTotalDistance(int startDistance, int endDistance, Context context){
-        int totalDistance =  endDistance - startDistance;
-        return String.format("%s %s",totalDistance, getDistanceUnit(context));
+        int totalDistance =  properDistance((endDistance - startDistance), context);
+        return String.format("%s %s",totalDistance,getDistanceUnit(context));
+    }
+
+    public static String formattedAmount(int amount, Context context){
+       return String.format("%s %s", properAmount(amount,context),  getAmountUnit(context));
+
     }
 
     public static String getDistanceUnit(Context context){
@@ -178,6 +191,74 @@ public class Utility {
             e.printStackTrace();
             return null;
         }
+    }
+
+    //conversions
+    private static int kilometerToMile(int kilometers){
+        return (int) (kilometers * KM_TO_MILES_CONSTANT);
+    }
+
+    private static int mileToKilometer(int miles){
+        return (int) (miles * MILE_TO_KILOMETER_CONSTANT);
+    }
+
+    private static int literToUsGallon(int liter){
+        return (int) (liter * LITER_TO_US_GALLON_CONSTANT);
+    }
+
+    private static int literToImperialGallon(int liter){
+        return (int) (liter * LITER_TO_IMPERIAL_GALLO_CONSTANT);
+    }
+
+    private static int UsGallonToLiter(int amount) {
+        return (int)(amount * US_GAL_TO_LITER);
+    }
+
+    private static int ImperialGallonToLiter(int amount) {
+        return (int) (amount * IMPERIAL_GAL_TO_LITER);
+    }
+
+    public static int gallonToLiter(int amount, Context context){
+        String amountUnit = getAmountUnit(context);
+
+        if(context.getString(R.string.pref_amount_units_imperial_gallon).equals(amountUnit)){
+            amount = ImperialGallonToLiter(amount);
+        } else if(context.getString(R.string.pref_amount_units_us_gallon).equals(amountUnit)){
+            amount = UsGallonToLiter(amount);
+        }
+        return  amount;
+    }
+
+    public static int mileToKilometer(int distance, Context context){
+        String distanceUnit = getDistanceUnit(context);
+
+        if(!context.getString(R.string.pref_distance_units_kilometers).equals(distanceUnit)){
+            distance = mileToKilometer(distance);
+        }
+
+        return distance;
+    }
+
+
+    public static int properDistance(int distance, Context context){
+        String distanceUnit = getDistanceUnit(context);
+
+        if(!context.getString(R.string.pref_distance_units_kilometers).equals(distanceUnit)){
+            distance = kilometerToMile(distance);
+        }
+
+        return distance;
+    }
+
+    public static int properAmount(int amount, Context context){
+        String amountUnit = getAmountUnit(context);
+
+        if(context.getString(R.string.pref_amount_units_imperial_gallon).equals(amountUnit)){
+            amount = literToImperialGallon(amount);
+        } else if(context.getString(R.string.pref_amount_units_us_gallon).equals(amountUnit)){
+            amount = literToUsGallon(amount);
+        }
+        return amount;
     }
 
 }

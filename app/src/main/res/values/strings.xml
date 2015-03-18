@@ -31,21 +31,21 @@
 
     <!--distance settings-->
     <string name="pref_distance_units_label">Distance Units</string>
-    <string name="pref_distance_units_label_kilometers">kilometers</string>
-    <string name="pref_distance_units_label_miles">miles</string>
+    <string name="pref_distance_units_label_kilometers">Kilometers</string>
+    <string name="pref_distance_units_label_miles">Miles</string>
 
-    <string name="pref_distance_units_key" translatable="false">distance_units</string>
+    <string name="pref_distance_units_key" translatable="false">distance_unit</string>
     <string name="pref_distance_units_kilometers" translatable="false">Kilometers</string>
     <string name="pref_distance_units_miles" translatable="false">Miles</string>
 
     <!-- amount settings -->
     <string name="pref_amount_units_label">Amount units</string>
-    <string name="pref_amount_units_label_us_gallon">US gallons</string>
-    <string name="pref_amount_units_label_imperial_gallon">Imperial gallons</string>
+    <string name="pref_amount_units_label_us_gallon">US gal</string>
+    <string name="pref_amount_units_label_imperial_gallon">Imperial gal</string>
     <string name="pref_amount_units_label_litres">Litres</string>
 
     <string name="pref_amount_units_key" translatable="false">amount_unit</string>
-    <string name="pref_amount_units_litres" translatable="false">Liters</string>
-    <string name="pref_amount_units_us_gallon" translatable="false">US gallon</string>
-    <string name="pref_amount_units_imperial_gallon" translatable="false">Imperial gallon</string>
+    <string name="pref_amount_units_litres" translatable="false">liters</string>
+    <string name="pref_amount_units_us_gallon" translatable="false">US gallons</string>
+    <string name="pref_amount_units_imperial_gallon" translatable="false">Imperial gallons</string>
 </resources>
