@@ -116,6 +116,8 @@ public class EndLogActivity extends Activity {
                         String endDistanceString = ((TextView)rootView.findViewById(R.id.end_distance_editText)).getText().toString();
                         try{
                             int endDistance = Integer.parseInt(endDistanceString);
+                            endDistance = Utility.mileToKilometer(endDistance, getActivity());
+
                             Cursor currentLogCursor= contentResolver.query(
                                     LogContract.LogEntry.CONTENT_URI,
                                     LOG_COLUMNS,

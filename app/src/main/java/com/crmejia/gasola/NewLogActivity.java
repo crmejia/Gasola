@@ -108,6 +108,7 @@ public class NewLogActivity extends Activity {
             int gasAmount = 0, startDistance = 0;
             try {
                 gasAmount = Integer.parseInt(gasAmountString);
+                gasAmount = Utility.gallonToLiter(gasAmount,getActivity());
             } catch (NumberFormatException e) {
                 Utility.toastAmount(getActivity());
                 Log.i(LOG_TAG, e.getMessage());
@@ -116,11 +117,13 @@ public class NewLogActivity extends Activity {
 
             try {
                 startDistance = Integer.parseInt(startDistanceString);
+                startDistance = Utility.mileToKilometer(startDistance,getActivity());
             } catch (NumberFormatException e) {
                 Utility.toastDistance(getActivity());
                 Log.i(LOG_TAG, e.getMessage());
                 return false;
             }
+            
             if(gasAmount > 0 && startDistance > 0) {
                 //get contentProvider from resolver and insertdata
                 ContentValues newLogValues = new ContentValues();
