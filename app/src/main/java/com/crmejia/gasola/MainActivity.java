@@ -72,6 +72,8 @@ public class MainActivity extends Activity {
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+            //The current/new button changes text depending on a new log was created, or log was ended or canceled
             if(requestCode == NEW_LOG_REQUEST){
                 //a new log was started we should change the button text to current log
                 if(resultCode == RESULT_OK){
@@ -227,6 +229,8 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
+                    //move cursor to last entry, if there is a cursor(not empty) and its distance is 0 then we are currently logging
+                    //otherwise we need to create a new log
                     boolean lastLog = currentLogCursor.moveToLast();
                     if (lastLog && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0) {
                         mCurrentNewLogButton.setText(getString(R.string.current_log_button_string));
@@ -234,7 +238,7 @@ public class MainActivity extends Activity {
                         Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
                                 .putExtra(Intent.EXTRA_TEXT, idString);
                         startActivityForResult(endLogIntent, END_LOG_REQUEST);
-                    } else if (lastLog && currentLogCursor.getInt(COL_LOG_END_DISTANCE) != 0) {
+                    } else {// if (lastLog && currentLogCursor.getInt(COL_LOG_END_DISTANCE) != 0) {
                         Intent newLogIntent = new Intent(getActivity(), NewLogActivity.class);
                         startActivityForResult(newLogIntent, NEW_LOG_REQUEST);
                     }
