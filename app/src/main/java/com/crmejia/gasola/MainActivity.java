@@ -65,6 +65,14 @@ public class MainActivity extends Activity {
         private Button mNewLogButton;
         private Button mCurrentNewLogButton;
         private SimpleCursorAdapter mLogAdapter;
+        private TextView mFuelEconomyTextView;
+        private TextView mFuelConsumptionTextView;
+        private float mAverageFuelConsumption = -1;
+        private float mAverageFuelEconomy = -1;
+        private String mDistanceUnit;
+        private String mAmountUnit;
+        private ListView mLogListView;
+        private View mRootView;
 
         private static final int LOG_LOADER = 1;
         static final int NEW_LOG_REQUEST =1;
@@ -104,10 +112,6 @@ public class MainActivity extends Activity {
         public static final int COL_LOG_START_DISTANCE = 3;
         public static final int COL_LOG_END_DISTANCE = 4;
         public static final int COL_LOG_GAS_AMOUNT = 5;
-        private TextView mfuelEconomyTextVIew;
-        private TextView mfuelConsumptiomTextView;
-        private float mAverageFuelConsumption = -1;
-        private float mAverageFuelEconomy = -1;
 
 
         public PlaceholderFragment() {
@@ -171,28 +175,25 @@ public class MainActivity extends Activity {
                 }
             });
 
-
-
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            mRootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             //set fuel economy and consumption units
-            ((TextView) rootView.findViewById(R.id.fuel_economy_unit_textView)).setText(Utility.formattedfuelEconomyUnit(getActivity()));
-            ((TextView) rootView.findViewById(R.id.fuel_consumption_unit_textView)).setText(Utility.formattedfuelConsumptionUnit(getActivity()));
+            setFuelUnits(mRootView);
 
-            mfuelEconomyTextVIew = (TextView) rootView.findViewById(R.id.fuel_economy_textView);
-            mfuelConsumptiomTextView = (TextView) rootView.findViewById(R.id.fuel_consumption_textView);
+            mFuelEconomyTextView = (TextView) mRootView.findViewById(R.id.fuel_economy_textView);
+            mFuelConsumptionTextView = (TextView) mRootView.findViewById(R.id.fuel_consumption_textView);
 
-            ListView listView = (ListView) rootView.findViewById(R.id.listView_logs);
-            listView.setAdapter(mLogAdapter);
+            mLogListView = (ListView) mRootView.findViewById(R.id.listView_logs);
+            mLogListView.setAdapter(mLogAdapter);
 
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mLogListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     Cursor cursor = mLogAdapter.getCursor();
-                    if(cursor != null && cursor.moveToPosition(position)) {
+                    if (cursor != null && cursor.moveToPosition(position)) {
                         int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
 
-                        if(endDistance != 0) {
+                        if (endDistance != 0) {
                             String gasAmount = cursor.getString(COL_LOG_GAS_AMOUNT);
                             String startDistance = cursor.getString(COL_LOG_START_DISTANCE);
                             String startDate = cursor.getString(COL_LOG_START_DATE);
@@ -216,7 +217,7 @@ public class MainActivity extends Activity {
                 }
             });
 
-            mCurrentNewLogButton = (Button) rootView.findViewById(R.id.current_new_log_button);
+            mCurrentNewLogButton = (Button) mRootView.findViewById(R.id.current_new_log_button);
             Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
 
             if (currentLogCursor.moveToLast() && currentLogCursor.getInt(COL_LOG_END_DISTANCE) == 0)
@@ -245,7 +246,12 @@ public class MainActivity extends Activity {
                 }
             });
 
-            return rootView;
+            return mRootView;
+        }
+
+        private void setFuelUnits(View rootView) {
+            ((TextView) rootView.findViewById(R.id.fuel_economy_unit_textView)).setText(Utility.formattedfuelEconomyUnit(getActivity()));
+            ((TextView) rootView.findViewById(R.id.fuel_consumption_unit_textView)).setText(Utility.formattedfuelConsumptionUnit(getActivity()));
         }
 
         @Override
@@ -268,15 +274,38 @@ public class MainActivity extends Activity {
             mLogAdapter.swapCursor(data);
             if(mAverageFuelConsumption < 0 && mAverageFuelEconomy < 0 ) {
                 calculateAverageFuel(data);
-                mfuelConsumptiomTextView.setText(Utility.formattedfuelConsumption(mAverageFuelConsumption, getActivity()));
-                mfuelEconomyTextVIew.setText(Utility.formattedfuelEconomy(mAverageFuelEconomy, getActivity()));
+                mFuelConsumptionTextView.setText(Utility.formattedfuelConsumption(mAverageFuelConsumption, getActivity()));
+                mFuelEconomyTextView.setText(Utility.formattedfuelEconomy(mAverageFuelEconomy, getActivity()));
             }
+
+            //these are set to check for preference changes
+            mDistanceUnit = Utility.getDistanceUnit(getActivity());
+            mAmountUnit = Utility.getAmountUnit(getActivity());
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) {
             mLogAdapter.swapCursor(null);
 
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        public void onResume() {
+            //if any of the unit preference change update the views we check to member variable for a change in the preference
+            String distanceUnit = Utility.getDistanceUnit(getActivity());
+            String amountUnit = Utility.getAmountUnit(getActivity());
+            if(mDistanceUnit != null && mAmountUnit != null && mRootView != null && (!mDistanceUnit.equals(distanceUnit) || !mAmountUnit.equals(amountUnit))) {
+                mDistanceUnit = distanceUnit;
+                mAmountUnit = amountUnit;
+                setFuelUnits(mRootView);
+                getLoaderManager().restartLoader(LOG_LOADER, null, this);
+            }
+            super.onResume();
         }
 
         private void calculateAverageFuel(Cursor cursor){
