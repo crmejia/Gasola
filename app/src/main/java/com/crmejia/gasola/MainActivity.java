@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -185,37 +184,6 @@ public class MainActivity extends Activity {
 
             mLogListView = (ListView) mRootView.findViewById(R.id.listView_logs);
             mLogListView.setAdapter(mLogAdapter);
-
-            mLogListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    Cursor cursor = mLogAdapter.getCursor();
-                    if (cursor != null && cursor.moveToPosition(position)) {
-                        int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
-
-                        if (endDistance != 0) {
-                            String gasAmount = cursor.getString(COL_LOG_GAS_AMOUNT);
-                            String startDistance = cursor.getString(COL_LOG_START_DISTANCE);
-                            String startDate = cursor.getString(COL_LOG_START_DATE);
-                            String endDate = cursor.getString(COL_LOG_END_DATE);
-
-                            String extraString = String.format("%s litres - %s km - %s km   %s   %s",
-                                    gasAmount, startDistance, endDistance, startDate, endDate);
-
-                            Intent logDetailIntent = new Intent(getActivity(), LogDetailActivity.class)
-                                    .putExtra(Intent.EXTRA_TEXT, extraString);
-
-                            startActivity(logDetailIntent);
-                        } else {
-                            //this is the current log, send to endlogactivity
-                            String idString = cursor.getString(COL_LOG_ID);
-                            Intent endLogIntent = new Intent(getActivity(), EndLogActivity.class)
-                                    .putExtra(Intent.EXTRA_TEXT, idString);
-                            startActivityForResult(endLogIntent, END_LOG_REQUEST);
-                        }
-                    }
-                }
-            });
 
             mCurrentNewLogButton = (Button) mRootView.findViewById(R.id.current_new_log_button);
             Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
