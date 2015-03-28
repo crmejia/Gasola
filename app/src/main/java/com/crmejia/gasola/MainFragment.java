@@ -13,14 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.crmejia.gasola.data.LogContract;
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private Button mCurrentNewLogButton;
-    private SimpleCursorAdapter mLogAdapter;
+    private LogAdapter mLogAdapter;
     private TextView mFuelEconomyTextView;
     private TextView mFuelConsumptionTextView;
     private float mAverageFuelConsumption = -1;
@@ -82,64 +81,19 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mLogAdapter = new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.list_item_log,
-                null,
-                new String[]{LogContract.LogEntry.COLUMN_START_DATE,
-                        LogContract.LogEntry.COLUMN_END_DATE,
-                        LogContract.LogEntry.COLUMN_START_DISTANCE,
-                        LogContract.LogEntry.COLUMN_GAS_AMOUNT
-                },
-                new int[]{
-                        R.id.list_item_log_start_date_textView,
-                        R.id.list_item_log_end_date_textView,
-                        R.id.list_item_log_distance_textView,
-                        R.id.list_item_log_quantity_textView
-                },
-                0
-        );
-
-        mLogAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-                int endDistance = cursor.getInt(COL_LOG_END_DISTANCE);
-                switch (columnIndex){
-                    case COL_LOG_START_DISTANCE:
-                        if(endDistance > 0) {
-                            ((TextView) view).setText(Utility.formattedTotalDistance(cursor.getInt(columnIndex), endDistance, getActivity()));
-                        }
-                        else
-                            ((TextView)view).setText("Logging...");
-                        return true;
-                    case COL_LOG_GAS_AMOUNT:
-                        ((TextView)view).setText(Utility.formattedAmount(cursor.getInt(columnIndex),getActivity()));
-                        return true;
-                    case COL_LOG_START_DATE:
-                        ((TextView)view).setText(String.format("From %s",Utility.getFriendlyDayString(getActivity(),cursor.getString(columnIndex))));
-                        return true;
-                    case COL_LOG_END_DATE:
-                        String text = "";
-                        if(endDistance > 0) {
-                            text = String.format("Until %s", Utility.getFriendlyDayString(getActivity(), cursor.getString(columnIndex)));
-                        }
-                        ((TextView) view).setText(text);
-                        return true;
-                }
-                return false;
-            }
-        });
-
         mRootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        //set the log list view
+        mLogAdapter = new LogAdapter(getActivity(), null, 0);
+
+        ListView mLogListView = (ListView) mRootView.findViewById(R.id.listView_logs);
+        mLogListView.setAdapter(mLogAdapter);
 
         //set fuel economy and consumption units
         setFuelUnits(mRootView);
 
         mFuelEconomyTextView = (TextView) mRootView.findViewById(R.id.fuel_economy_textView);
         mFuelConsumptionTextView = (TextView) mRootView.findViewById(R.id.fuel_consumption_textView);
-
-        ListView mLogListView = (ListView) mRootView.findViewById(R.id.listView_logs);
-        mLogListView.setAdapter(mLogAdapter);
 
         mCurrentNewLogButton = (Button) mRootView.findViewById(R.id.current_new_log_button);
         Cursor currentLogCursor = getActivity().getContentResolver().query(LogContract.LogEntry.CONTENT_URI, LOG_COLUMNS, null, null, null);
