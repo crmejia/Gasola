@@ -85,7 +85,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         //set the log list view
         mLogAdapter = new LogAdapter(getActivity(), null, 0);
-
         ListView mLogListView = (ListView) mRootView.findViewById(R.id.listView_logs);
         mLogListView.setAdapter(mLogAdapter);
 
@@ -125,7 +124,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
 
-        currentLogCursor.close();
+//        currentLogCursor.close();
         return mRootView;
     }
 
