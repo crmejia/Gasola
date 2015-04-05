@@ -9,13 +9,19 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.crmejia.gasola.data.LogContract;
+import com.crmejia.gasola.data.LogProvider;
+
 /**
  * Created by crismarmejia on 3/28/15.
  */
 public class LogAdapter extends CursorAdapter {
 
+    private Context mContext;
+
     public LogAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
+        mContext = context;
     }
 
     public static class ViewHolder{
@@ -45,8 +51,30 @@ public class LogAdapter extends CursorAdapter {
         return view;
     }
 
+//    @Override
+//    public View getView(final int position, View convertView, ViewGroup parent) {
+//        ViewHolder viewHolder;
+//        if(convertView == null){
+//            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_log, parent, false);
+//            viewHolder = new ViewHolder(convertView);
+//            convertView.setTag(viewHolder);
+//        } else{
+//            viewHolder = (ViewHolder) convertView.getTag();
+//        }
+//        viewHolder.deleteButtonView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                long itemId = getItemId(position);
+//                Log.d("hh","hh" + itemId);
+////                mContext.getContentResolver().delete(LogContract.LogEntry.CONTENT_URI, LogProvider._ID_SELECTION, new String[]{String.valueOf(position)});
+//
+//            }
+//        });
+//        return convertView;
+//    }
+
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         String startDate = String.format("From %s",Utility.getFriendlyDayString(context,cursor.getString(MainFragment.COL_LOG_START_DATE)));
@@ -65,5 +93,12 @@ public class LogAdapter extends CursorAdapter {
         viewHolder.endDateView.setText(endDate);
         viewHolder.quantityView.setText(gasAmount);
         viewHolder.distanceView.setText(totalDistance);
+        viewHolder.deleteButtonView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO current/new log button on main activity is not getting refreshed if all the items are deleted
+                mContext.getContentResolver().delete(LogContract.LogEntry.CONTENT_URI, LogProvider._ID_SELECTION, new String[]{cursor.getString(MainFragment.COL_LOG_ID)});
+            }
+        });
     }
 }

@@ -61,6 +61,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_menu_delete"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        style="?android:borderlessButtonStyle"/>
 
 </LinearLayout>
