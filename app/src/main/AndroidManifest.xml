@@ -24,10 +24,6 @@
             android:name=".EndLogActivity"
             android:label="@string/title_activity_end_log" >
         </activity>
-        <activity
-            android:name=".LogDetailActivity"
-            android:label="@string/title_activity_log_detail" >
-        </activity>
         <activity android:name=".SettingsActivity"
             android:label="Settings">
         </activity>

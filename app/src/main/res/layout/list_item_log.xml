@@ -1,51 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="4"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="10 litres"
-            android:id="@+id/list_item_log_quantity_textView"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="10 litres"
+                android:id="@+id/list_item_log_quantity_textView"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="22sp"
+                android:gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="40 kilometers"
+                android:id="@+id/list_item_log_distance_textView"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="22sp"
+                android:gravity="center_horizontal"/>
+
+            </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Saturday, January 24 2015"
+            android:id="@+id/list_item_log_start_date_textView"
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-condensed"
-            android:textSize="22sp"
-            android:gravity="center_horizontal"/>
+            android:textSize="16sp"/>
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="40 kilometers"
-            android:id="@+id/list_item_log_distance_textView"
+            android:text="Monday, January 26 2015"
+            android:id="@+id/list_item_log_end_date_textView"
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-condensed"
-            android:textSize="22sp"
-            android:gravity="center_horizontal"/>
-
-        </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
+            android:textSize="16sp"/>
+    </LinearLayout>
+    <ImageButton
+        android:id="@+id/list_item_log_delete_imageButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Saturday, January 24 2015"
-        android:id="@+id/list_item_log_start_date_textView"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="16sp"/>
+        android:src="@android:drawable/ic_menu_delete"
+        android:layout_gravity="center"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Monday, January 26 2015"
-        android:id="@+id/list_item_log_end_date_textView"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="sans-serif-condensed"
-        android:textSize="16sp"/>
 </LinearLayout>
