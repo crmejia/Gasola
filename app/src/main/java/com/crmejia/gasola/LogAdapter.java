@@ -51,28 +51,6 @@ public class LogAdapter extends CursorAdapter {
         return view;
     }
 
-//    @Override
-//    public View getView(final int position, View convertView, ViewGroup parent) {
-//        ViewHolder viewHolder;
-//        if(convertView == null){
-//            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_log, parent, false);
-//            viewHolder = new ViewHolder(convertView);
-//            convertView.setTag(viewHolder);
-//        } else{
-//            viewHolder = (ViewHolder) convertView.getTag();
-//        }
-//        viewHolder.deleteButtonView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                long itemId = getItemId(position);
-//                Log.d("hh","hh" + itemId);
-////                mContext.getContentResolver().delete(LogContract.LogEntry.CONTENT_URI, LogProvider._ID_SELECTION, new String[]{String.valueOf(position)});
-//
-//            }
-//        });
-//        return convertView;
-//    }
-
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
