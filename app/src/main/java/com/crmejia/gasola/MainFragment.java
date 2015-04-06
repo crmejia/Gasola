@@ -22,8 +22,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private LogAdapter mLogAdapter;
     private TextView mFuelEconomyTextView;
     private TextView mFuelConsumptionTextView;
-    private float mAverageFuelConsumption = -1;
-    private float mAverageFuelEconomy = -1;
+    private float mAverageFuelConsumption;
+    private float mAverageFuelEconomy;
     private String mDistanceUnit;
     private String mAmountUnit;
     private View mRootView;
@@ -31,6 +31,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final int LOG_LOADER = 1;
     static final int NEW_LOG_REQUEST =1;
     static final int END_LOG_REQUEST =2;
+    static final String FUEL_ECONOMY = "fuel economy";
+    static final String FUEL_CONSUMPTION = "fuel consumption";
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,11 +153,11 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mLogAdapter.swapCursor(data);
-        if(mAverageFuelConsumption < 0 && mAverageFuelEconomy < 0 ) {
+        //if(mAverageFuelConsumption < 0 && mAverageFuelEconomy < 0 ) {
             calculateAverageFuel(data);
             mFuelConsumptionTextView.setText(Utility.formattedfuelConsumption(mAverageFuelConsumption, getActivity()));
             mFuelEconomyTextView.setText(Utility.formattedfuelEconomy(mAverageFuelEconomy, getActivity()));
-        }
+        //}
 
         //these are set to check for preference changes
         mDistanceUnit = Utility.getDistanceUnit(getActivity());
@@ -187,24 +189,31 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onResume();
     }
 
-    private void calculateAverageFuel(Cursor cursor){
+    private void calculateAverageFuel(Cursor cursor) {
         float averageFuelConsumption = 0;
         float averageFuelEconomy = 0;
 
-        if(cursor != null){
-            int distance, amount, count =0 ;
-            while(cursor.moveToNext()){
-                distance = Utility.properDistance(cursor.getInt(COL_LOG_END_DISTANCE) - cursor.getInt(COL_LOG_START_DISTANCE),getActivity());
-                if(distance > 0) {
+        if (cursor.getCount() > 0) {
+            int distance, amount, count = 0;
+            cursor.moveToFirst();
+
+            do {
+                distance = Utility.properDistance(cursor.getInt(COL_LOG_END_DISTANCE) - cursor.getInt(COL_LOG_START_DISTANCE), getActivity());
+                if (distance > 0) {
                     count++;
-                    amount = Utility.properAmount(cursor.getInt(COL_LOG_GAS_AMOUNT),getActivity());
+                    amount = Utility.properAmount(cursor.getInt(COL_LOG_GAS_AMOUNT), getActivity());
                     averageFuelConsumption += Utility.fuelConsumption(distance, amount);
                     averageFuelEconomy += Utility.fuelEconomy(distance, amount);
                 }
-            }
+            } while (cursor.moveToNext());
             //use count and not cursor.getCount() because we skip current log
-            mAverageFuelConsumption = averageFuelConsumption / count;
-            mAverageFuelEconomy = averageFuelEconomy / count;
+            //prevent division by 0
+            if (count > 0) {
+                averageFuelConsumption =  averageFuelConsumption / count;
+                averageFuelEconomy = averageFuelEconomy / count;
+            }
         }
+        mAverageFuelConsumption = averageFuelConsumption;
+        mAverageFuelEconomy = averageFuelEconomy;
     }
 }
